@@ -11,7 +11,12 @@ router.get('/', (req, res) => {
 				posts: posts.map((post) => post.apiRepr())
 			});
 		})
-})
+});
+
+router.get('/:id', (req, res) => {
+	Post.findById(req.params.id).exec()
+		.then(post => res.json(post.apiRepr()));
+});
 
 const {Post} = require('./models');
 
