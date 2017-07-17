@@ -1,13 +1,16 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const bodyParser = require("body-parser");
 const app = express();
 
 require('dotenv').config();
 
 const {PORT, DATABASE_URL} = require('./config');
+const blogPostRouter = require('./blogPostRouter');
 
 app.use(morgan('common'));
+app.use(bodyParser.json());
 
 app.use('/posts', blogPostRouter);
 

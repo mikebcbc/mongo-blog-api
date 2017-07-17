@@ -1,7 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const bodyParser = require("body-parser");
+const mongoose = require('mongoose');
 
-const jsonParser = bodyParser.json();
+mongoose.Promise = global.Promise; // make mongoose use ES6 Promises
 
-const {BlogPosts} = require('./models');
+router.get('/', (req, res) => {
+	Post.find().exec()
+		.then(posts => {
+			res.json({
+				posts: posts.map((post) => post.apiRepr())
+			});
+		})
+})
+
+const {Post} = require('./models');
+
+
+
+module.exports = router;
