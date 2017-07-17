@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise; // make mongoose use ES6 Promises
 
+const {Post} = require('./models');
+
 router.get('/', (req, res) => {
 	Post.find().exec()
 		.then(posts => {
@@ -68,12 +70,14 @@ router.put('/:id', (req, res) => {
   });
 
   Post.findByIdAndUpdate(req.params.id, {$set: update}).exec()
-  .then(post => res.status(204).end())
+  .then(post => res.status(200).json(post.apiRepr()))
+  .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
+
+router.delete('/:id', (req, res) => {
+	Post.findByIdAndDelete(req.params.id).exec()
+	.then(post => res.status(204).end())
   .catch(err => res.status(500).json({message: 'Internal server error'}));
 })
-
-const {Post} = require('./models');
-
-
 
 module.exports = router;
