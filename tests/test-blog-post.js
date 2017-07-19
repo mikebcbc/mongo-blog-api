@@ -98,9 +98,36 @@ describe('Blog API', function() {
 					aPost.author.should.contain(post.author.lastName);
 				});
 		});
+	});
 
-
-	})
+	describe('POST endpoint', function() {
+		it('should add a new post', function() {
+			const newPost = generateData();
+			return chai.request(app)
+				.post('/posts')
+				.send(newPost)
+				.then(function(res) {
+					res.should.have.status(201);
+					res.should.be.json;
+					res.body.should.be.a('object');
+					res.body.should.include.keys('id', 'title', 'content', 'author');
+					// Check the actual returned object
+					res.body.title.should.equal(newPost.title);
+					res.body.content.should.equal(newPost.content);
+					res.body.author.should.contain(newPost.author.firstName);
+					res.body.author.should.contain(newPost.author.lastName);
+					return Post.findById(res.body.id);
+				})
+				.then(function(post) {
+					// Check to see if matches in DB
+					post.title.should.equal(newPost.title);
+					post.content.should.equal(newPost.content);
+					console.log(post);
+					post.author.firstName.should.equal(newPost.author.firstName);
+					post.author.lastName.should.equal(newPost.author.lastName);
+				});
+		});
+	});
 })
 
 
