@@ -128,6 +128,43 @@ describe('Blog API', function() {
 				});
 		});
 	});
+
+	describe('PUT endpoint', function() {
+		it('should update fields that are sent', function() {
+			const updateData = {
+				title: 'A new title',
+				content: 'Some new content',
+				author: {
+					firstName: 'Jacqueline',
+					lastName: 'Funky'
+				}
+			};
+
+			return Post
+				.findOne()
+				.exec()
+				.then(function(post) {
+					updateData.id = post.id;
+
+					return chai.request(app)
+						.put(`/posts/${post.id}`)
+						.send(updateData);
+				})
+				.then(function(res) {
+					res.should.have.status(204);
+					return Post.findById(updateData.id).exec();
+				})
+				.then(function(post) {
+					post.id.should.equal(updateData.id);
+					post.title.should.equal(updateData.title);
+					post.content.should.equal(updateData.content);
+					post.author.firstName.should.equal(updateData.author.firstName);
+					post.author.lastName.should.equal(updateData.author.lastName);
+				});
+		});
+	});
+
+	
 })
 
 

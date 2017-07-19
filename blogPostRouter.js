@@ -70,7 +70,7 @@ router.put('/:id', (req, res) => {
   });
 
   Post.findByIdAndUpdate(req.params.id, {$set: update}).exec()
-  .then(post => res.status(200).json(post.apiRepr()))
+  .then(post => res.status(204).end())
   .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
