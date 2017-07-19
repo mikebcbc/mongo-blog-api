@@ -37,6 +37,7 @@ function destroyDb() {
 	return mongoose.connection.dropDatabase();
 }
 
+
 describe('Blog API', function() {
 	
 	before(function() {
@@ -55,7 +56,51 @@ describe('Blog API', function() {
 		return closeServer();
 	});
 
-	it ('should log hello', function() {
-		console.log('hello');
+	describe('GET endpoint', function() {
+		it('should return all posts', function() {
+			let res;
+			return chai.request(app)
+				.get('/posts')
+				.then(function(_res) {
+					res = _res;
+					res.should.have.status(200);
+					res.body.posts.should.have.length.of.at.least(1);
+					return Post.count();
+				})
+				.then(function(count) {
+					res.body.posts.should.have.length(count);
+				});
+		});
+
+		it('should have right fields & formatted author', function() {
+			let aPost;
+			return chai.request(app)
+				.get('/posts')
+				.then(function(res) {
+					res.should.have.status(200);
+					res.should.be.json;
+					res.body.posts.should.be.a('array');
+					res.body.posts.should.have.length.of.at.least(1);
+
+					res.body.posts.forEach(function(post) {
+						post.should.be.a('object');
+						post.should.include.keys('id', 'title', 'content', 'author');
+						post.author.should.be.a('string');
+					});
+					aPost = res.body.posts[0];
+					return Post.findById(aPost.id);
+				})
+				.then(function(post) {
+					aPost.id.should.equal(post.id);
+					aPost.title.should.equal(post.title);
+					aPost.content.should.equal(post.content);
+					aPost.author.should.contain(post.author.firstName);
+					aPost.author.should.contain(post.author.lastName);
+				});
+		});
+
+
 	})
 })
+
+
