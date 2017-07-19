@@ -14,7 +14,8 @@ chai.use(chaiHttp);
 function seedData() {
 	console.info('inserting data into db');
 	const data = [];
-	for(let i=1; i<10, i++) {
+
+	for(let i=1; i<=10; i++) {
 		data.push(generateData());
 	}
 	return Post.insertMany(data);
@@ -31,13 +32,30 @@ function generateData() {
 	}
 }
 
+function destroyDb() {
+	console.warn('Destroying database');
+	return mongoose.connection.dropDatabase();
+}
+
 describe('Blog API', function() {
 	
 	before(function() {
 		return runServer(TEST_DATABASE_URL);
-	})
+	});
 
-	beforeEach(function(), {
+	beforeEach(function() {
 		return seedData();
+	});
+
+	afterEach(function() {
+		return destroyDb();
+	});
+
+	after(function() {
+		return closeServer();
+	});
+
+	it ('should log hello', function() {
+		console.log('hello');
 	})
 })
